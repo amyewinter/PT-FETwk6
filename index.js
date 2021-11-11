@@ -1,7 +1,7 @@
 /*  Final coding project, week 6, Front End Technologies
 Build a create-read-update-delete application using a remote API https://crudcrud.com/
 
-This is a prototype of an item tracking system for a small-scale online store similar to Etsy etc.  The business model is  a shop run by my friend, Desert Oddities; she purchases southwestern-style jewelry and other items at thrift stores, refurbishes them, and sells them online.
+This is a prototype of an item tracking system for a small-scale online store similar to Etsy etc.  The business model is a shop run by my friend, Desert Oddities; she purchases vintage southwestern-related items at thrift stores, refurbishes them, and sells them online.
 
 https://www.etsy.com/shop/DesertOddities
 
@@ -19,6 +19,38 @@ Items will have properties itemName, itemNum, type, status, and price.
 
 */
 
+const baseUrl =
+  "https://crudcrud.com/api/f770c19eee1c4acfa40526be802779f5/shops";
+
+function makePost(url, string) {
+  return $.ajax({
+    url: url,
+    type: "POST",
+    datatype: "json",
+    data: JSON.stringify(string),
+    contentType: "application/json",
+  });
+}
+
+function makePut(url, string) {
+  return $.ajax({
+    url: url,
+    type: "PUT",
+    //dataType: "json", //not used with this API
+    data: JSON.stringify(string),
+    contentType: "application/json",
+  });
+}
+
+function firstShop() {
+  let shop01 = new Shop("Desert Oddities");
+  let amy = new Owner("Amy Mullins");
+  let ring = new Item("Vintage Pueblo Ring", 01, "ring", "active", 125);
+  shop01.items.push(ring);
+  shop01.owners.push(amy);
+  makePost(baseUrl, shop01).then((resp) => console.log(resp));
+}
+
 class Shop {
   constructor(shopName) {
     this.shopName = shopName;
@@ -26,13 +58,6 @@ class Shop {
     this.owners = [];
   }
 
-  addItem(itemName, itemNum, type, status, price) {
-    this.items.push(new Item(itemName, itemNum, type, status, price));
-  }
-
-  addOwner(ownerName) {
-    this.owners.push(new Owner(ownerName));
-  }
 }
 
 class Item {
@@ -52,7 +77,7 @@ class Owner {
 }
 
 class ShopService {
-  static url = "";
+  static url = baseUrl;
 
   static getAllShops() {
     return $.get(this.url);
@@ -126,5 +151,31 @@ class DOMManager {
           .then((shops) => this.render(shops));
       }
     }
+  }
+
+  static deleteItem(shopName, itemNum) {
+    for (let shop of this.shops) {
+      if (shopName == shopName) {
+        for (let item of shopName.items) {
+          if (itemNum == itemNum) {
+            shopName.items.splice(shopName.items.indexOf(itemNum), 1);
+            ShopService.updateShop(shopName)
+              .then(() => {
+                return ShopService.getAllShops();
+              })
+              .then((shops) => this.render(shops));
+          }
+        }
+      }
+    }
+  }
+
+$( () => {
+  DOMManager.getAllShops();
+});
+
+  //see line 109 in codealong
+  static render(shops) {
+    this.shops = shops;
   }
 }
