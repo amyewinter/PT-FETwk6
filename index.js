@@ -83,3 +83,48 @@ class ShopService {
     });
   }
 }
+
+class DOMManager {
+  static shops;
+
+  static getAllShops() {
+    ShopService.getAllShops().then((shops) => this.render(shops));
+  }
+
+  static createShop(shopName) {
+    ShopService.createShop(new Shop(shopName))
+      .then(() => {
+        return ShopService.getAllShops();
+      })
+      .then((shops) => this.render(houses));
+  }
+
+  static deleteShop(id) {
+    ShopService.deleteShop(id)
+      .then(() => {
+        return ShopService.getAllShops();
+      })
+      .then((shops) => this.render(shops));
+  }
+
+  static addItem() {
+    for (let shop of this.shops) {
+      if (shop._id == id) {
+        shop.items.push(
+          new Item(
+            $(`#${item._id}-itemName`).val(),
+            $(`#${item._id}-itemNum`).val(),
+            $(`#${item._id}-type`).val(),
+            $(`#${item._id}-status`).val(),
+            $(`#${item._id}-price`).val()
+          )
+        );
+        ShopService.updateShop(shop)
+          .then(() => {
+            return ShopService.getAllShops();
+          })
+          .then((shops) => this.render(shops));
+      }
+    }
+  }
+}
