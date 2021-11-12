@@ -1,5 +1,9 @@
-/*  Final coding project, week 6, Front End Technologies
+d; /*  Final coding project, week 6, Front End Technologies
+by Amy Winter, November 13, 2021
+
 Build a create-read-update-delete application using a remote API https://crudcrud.com/
+
+I was not assigned a coding partner by Ken; this project is all my own work.
 
 This is a prototype of an item tracking system for a small-scale online store similar to Etsy etc.  The business model is a shop run by my friend, Desert Oddities; she purchases vintage southwestern-related items at thrift stores, refurbishes them, and sells them online.
 
@@ -9,11 +13,7 @@ Possible objects are shop, owner, customer, and item.
 
 This prototype will track shops and items.
 
-A shop will have at least one owner and multiple items (arrays).  It will have only one property, shopName.
-
-Owners will have only one property as well, ownerName.
-
-Customers are ignored for now.
+A shop will have multiple items (arrays).  It will have only one property, shopName.
 
 Items will have properties itemName, itemNum, type, status, and price.
 
@@ -42,22 +42,20 @@ function makePut(url, string) {
   });
 }
 
+/*
+//
 function firstShop() {
   let shop01 = new Shop("Desert Oddities");
-  let amy = new Owner("Amy Mullins");
   let ring = new Item("Vintage Pueblo Ring", 01, "ring", "active", 125);
   shop01.items.push(ring);
-  shop01.owners.push(amy);
   makePost(baseUrl, shop01).then((resp) => console.log(resp));
-}
+} */
 
 class Shop {
   constructor(shopName) {
     this.shopName = shopName;
     this.items = [];
-    this.owners = [];
   }
-
 }
 
 class Item {
@@ -70,17 +68,11 @@ class Item {
   }
 }
 
-class Owner {
-  constructor(ownerName) {
-    this.ownerName = ownerName;
-  }
-}
-
 class ShopService {
-  static url = baseUrl;
+  //static url = baseUrl;
 
   static getAllShops() {
-    return $.get(this.url);
+    return $.get(baseURL);
   }
 
   static getShop(id) {
@@ -170,12 +162,69 @@ class DOMManager {
     }
   }
 
-$( () => {
+  //render the shops data returned from the API call
+  static render(shops) {
+    this.shops = shops;
+    let form = $("shopform");
+    form.empty();
+
+    for (let shopIdx in this.shops) {
+      let shop = this.shops[shopIdx];
+      let shopDiv = $(`<div class='row shop-div' idx='${shopIdx}'>
+      <label class='col-8 col-form-label'>Shop Name: ${shop.shopName}</label>
+      <div class='col-4 text-center'>
+        <button class="btn btn-danger" id='delete-shop-${shop._id}'>Delete</button>
+      </div>
+    </div>`);
+      form.append(shopDiv);
+
+      for (let itemIdx in shop.items) {
+        let item = shop.items[itemIdx];
+        let itemDiv = $(`<div class="row item-div" idx='${itemIdx}'>
+      <div class='col-1'>
+      </div>
+      <label class='col-7 col-form-label'>Item Name: ${item.itemName}</label>
+      <div class='col-4 text-right'>
+        <button class='btn btn-danger' id='delete-item-${item._id}'>Delete</button>
+      </div>
+    </div>`);
+
+        form.append(itemDiv);
+      }
+    }
+
+    //Delete Item - finding buttons that contain the string delete-item; these buttons contain the item IDs from the API
+    form.find("button[id*='delete-item']").on("click", (e) => {
+      let id = e.target.id.split("-")[2];
+      DOMManager.deleteItem(id);
+      e.preventDefault();
+    });
+
+    //GOTO 47:28:00 in class video
+
+    //Add Item
+    let addItemBtn = $(
+      "<button class='btn btn-primary' id='add-item-btn'>Add Item</button>"
+    );
+    let newItemRow = $(
+      <div class="form-row" id="add-item-row">
+        STUFF HERE
+      </div>
+    ).hide();
+    addItemBtn.on("click", function (e) {});
+    $("shopform").append(addItemBtn);
+    $("shopform").append(newItemRow);
+    $("#add-item-cancel").on("click", function (e) {});
+    $("final-add-item-btn").on("click", function (e) {});
+  }
+}
+
+$(() => {
   DOMManager.getAllShops();
 });
 
+/*
   //see line 109 in codealong
   static render(shops) {
     this.shops = shops;
-  }
-}
+  }*/
