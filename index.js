@@ -1,3 +1,12 @@
+//Git workflow:  First person creates directory on local file system, add gitignore file, then create remote repository & push to it
+//Git init, git status, git add ., git commit -m, git branch -m main, git remote add origin, git push -u origin main
+//On Github, settings, manage access, invite second person
+//second person logs into github and accepts invitation
+//second person creates local directory, git init, git remote add origin with address pointing to first person's repo
+//second person then does git pull origin main
+//second person makes changes, git status, git add ., git commit -m, git branch -m main, git push
+//at this point, either person can then start making changes by git pull to get any changes
+
 /*  Final coding project, week 6, Front End Technologies
 by Amy Winter, November 13, 2021
 
@@ -101,6 +110,25 @@ class ShopService {
       type: "DELETE",
     });
   }
+
+  static editItem(
+    shopId,
+    newItemName,
+    newItemNum,
+    newItemType,
+    newItemStatus,
+    newItemPrice
+  ) {
+    shopLO.items[itemIdx].itemName = newItemName;
+    shopLO.items[itemIdx].itemNum = newItemNum;
+    shopLO.items[itemIdx].itemType = newItemType;
+    shopLO.items[itemIdx].itemStatus = newItemStatus;
+    shopLO.items[itemIdx].itemPrice = newItemPrice;
+    let shop = { ...shopLO };
+    delete shop._id;
+    console.log(shop);
+    return makePut(baseUrl + `/${shopId}`, shop);
+  }
 }
 
 class DOMManager {
@@ -145,6 +173,30 @@ class DOMManager {
           .then((shops) => this.render(shops));
       }
     }
+  }
+
+  static editItem(
+    shopId,
+    newItemName,
+    newItemNum,
+    newItemType,
+    newItemStatus,
+    newItemPrice
+  ) {
+    ShopService.editItem(
+      shopId,
+      this.shops[shopIdx],
+      itemIdx,
+      newItemName,
+      newItemNum,
+      newItemType,
+      newItemStatus,
+      newItemPrice
+    )
+      .then(() => {
+        return ShopService.getAllShops();
+      })
+      .then((shops) => this.render(shops));
   }
 
   static deleteItem(shopName, itemNum) {
@@ -275,15 +327,69 @@ class DOMManager {
       console.log(shopId + " " + shopIdx + " " + itemIdx);
 
       let newItemRow = $(
-        <div class="row item-div" idx="${itemIdx}">
+        `<div class="row item-div" idx="${itemIdx}">
           <div class="col-2"></div>
           <label class="col-form-label itemname">Item Name: </label>
           <label class="col-form-label itemnum">Item Number: </label>
           <label class="col-form-label itemtype">Item Type: </label>
           <label class="col-form-label itemstatus">Item Status: </label>
           <label class="col-form-label itemprice">Item Price: </label>
-        </div>
+          <div class='col-2 text-right align-middle change'>
+            <button class='btn btn-success align-middle'>Change</button>
+          </div>
+        </div>`
       );
+
+      newItemRow
+        .find(".itemname")
+        .empty()
+        .append("<input type='text' class='form-control'>");
+      newItemRow.find("input").val(this.shops[shopIdx].items[itemIdx]);
+      newItemRow
+        .find(".itemnum")
+        .empty()
+        .append("<input type='text' class='form-control'>");
+      newItemRow.find("input").val(this.shops[shopIdx].items[itemIdx]);
+      newItemRow
+        .find(".itemtype")
+        .empty()
+        .append("<input type='text' class='form-control'>");
+      newItemRow.find("input").val(this.shops[shopIdx].items[itemIdx]);
+      newItemRow
+        .find(".itemstatus")
+        .empty()
+        .append("<input type='text' class='form-control'>");
+      newItemRow.find("input").val(this.shops[shopIdx].items[itemIdx]);
+      newItemRow
+        .find(".itemprice")
+        .empty()
+        .append("<input type='text' class='form-control'>");
+      newItemRow.find("input").val(this.shops[shopIdx].items[itemIdx]);
+
+      newItemRow.find(".cancel-changes button").on("click", (e) => {
+        e.preventDefault();
+        newItemRow.remove();
+        itemDiv.show();
+      });
+
+      newItemRow.find(".change button").on("click", (e) => {
+        e.preventDefault();
+        let newItemName = newItemRow.find(".itemname").find("input").val();
+        let newItemNum = newItemRow.find(".itemnum").find("input").val();
+        let newItemType = newItemRow.find(".itemtype").find("input").val();
+        let newItemStatus = newItemRow.find(".itemstatus").find("input").val();
+        let newItemPrice = newItemRow.find(".itemprice").find("input").val();
+        if (
+          !!newItemName &&
+          !!newItemNum &&
+          !!newItemType &&
+          !!newItemStatus &&
+          !!newItemPrice
+        ) {
+          DOMManager.editItem();
+        }
+        newItemRow.remove();
+      });
     });
   }
 }
