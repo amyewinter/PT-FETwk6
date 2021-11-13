@@ -4,7 +4,8 @@ div {
   padding: 3px;
 }
 .shop-div {
-  border: 1px solid #2d92cc;
+  border: 1px solid #686868;
+  background-color: #cccccc;
 }
 
 .item-div {
