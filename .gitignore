@@ -2,6 +2,10 @@
 vid-code-along.html
 vid-code-along.js
 
+# Local folders
+/old
+/codealong
+
 # Logs
 logs
 *.log
