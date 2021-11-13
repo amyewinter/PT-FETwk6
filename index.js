@@ -219,10 +219,10 @@ class DOMManager {
   //render the shops data returned from the API call
   static render(shops) {
     this.shops = shops;
-    let form = $("shopform");
+    let form = $("#shopform");
     form.empty();
 
-    //shop div display, including delete button
+    //shop div display, including delete button; shopIdx = indices of shops from the array
     for (let shopIdx in this.shops) {
       let shop = this.shops[shopIdx];
       let shopDiv = $(`<div class='row shop-div' idx='${shopIdx}'>
@@ -231,7 +231,7 @@ class DOMManager {
         <button class="btn btn-danger" id='delete-shop-${shop._id}'>Delete</button>
       </div>
     </div>`);
-      form.append(shopDiv);
+      form.append(shopDiv); }
 
       //item div display, including delete button
 

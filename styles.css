@@ -1,0 +1,12 @@
+div {
+  border-radius: 5px;
+  margin: 0.5em 0 0.5em 0;
+  padding: 3px;
+}
+.shop-div {
+  border: 1px solid #2d92cc;
+}
+
+.item-div {
+  border: 1px solid #0dcaf0;
+}
