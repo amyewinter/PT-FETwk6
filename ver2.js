@@ -22,7 +22,6 @@ Items will have properties itemName, itemNum, type, status, and price.
 //Edit item
 //Delete item
 
-//fix paths to node modules in index.html before final commit
 //------------------------------------------------------------------------------------------------
 //API endpoint - valid until 12/11/2021
 const baseUrl =
