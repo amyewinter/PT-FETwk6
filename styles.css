@@ -11,8 +11,3 @@ div {
 .item-div {
   border: 1px solid #0dcaf0;
 }
-
-#addshopform,
-#additemform {
-  display: none;
-}
