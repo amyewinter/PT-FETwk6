@@ -23,8 +23,6 @@ Items will have properties itemName, itemNum, type, status, and price.
 //Delete item
 
 //fix paths to node modules in index.html before final commit
-//need to add code for add item button, to add items to shop - see line 133
-//need click handler for deleting items even though button exists?
 //------------------------------------------------------------------------------------------------
 //API endpoint - valid until 12/11/2021
 const baseUrl =
@@ -122,6 +120,13 @@ class ShopService {
   }
 
   //edit shop
+  static editShop(shopId, shopLO, newname) {
+    shopLO.name = newname;
+    let shop = { ...shopLO };
+    delete shop._id;
+    console.log(shop);
+    return makePut(baseUrl + `/${shopId}`, shop);
+  }
 
   //delete shop
   static deleteShop(id) {
@@ -132,6 +137,8 @@ class ShopService {
   }
 
   //add item
+  //for this I need the shop ID, then gather properties from form inputs, create new item, then push to items array of shop ID
+
   //edit item
   //delete item
 }
@@ -154,9 +161,6 @@ class DOMManager {
       })
       .then((shops) => this.render(shops));
   }
-  /*
-
-  //edit shop function
 
   //delete shop function
   static deleteShop(id) {
@@ -167,6 +171,15 @@ class DOMManager {
       .then((shops) => this.render(shops));
   }
 
+  //edit shop name function
+  static editShop(shopId, shopIdx, newname) {
+    ShopService.editShop(shopId, this.shops[shopIdx], newname)
+      .then(() => {
+        return ShopService.getAllShops();
+      })
+      .then((shops) => this.render(shops));
+  }
+  /*
   //add item
 
   static addItem() {
@@ -181,7 +194,7 @@ class DOMManager {
 */
   //-------------------------------------------------------------------------------------------------------------------------
   //Document rendering
-
+  //THIS ALL WORKS DO NOT CHANGE
   //shops is the returned JSON array of object literals from the API
   //render the shops data returned from the API call and clear out the entry form
   static render(shops) {
@@ -207,7 +220,7 @@ class DOMManager {
 </div></div>`
     ).hide();
 
-    //click event handler for Add Shop button - hides button, displays shop add input row
+    //click event handler for Add Shop button - hides button, displays shop add input row, includes on-click for cancel add and final add
     addShopBtn.on("click", function (e) {
       $(this).hide();
       newShopRow.show();
@@ -248,7 +261,50 @@ class DOMManager {
       </div>`);
       form.append(shopDiv);
 
-      //ADD ITEM
+      //THIS CODE NOT WORKING
+      let editShopRow = $(
+        `<div class='form-row' id='edit-shop-row'>
+<div class='col-8'>
+<input type='text' id='edit-shop-name' class='form-control' placeholder=${shop.name} />
+</div>
+<div class='col-4'>
+<button class='btn btn-sm btn-dark' id='final-edit-shop-btn'>Add</button>
+<button class='btn btn-sm btn-warning' id='edit-shop-cancel'>Cancel</button>
+</div></div>`
+      ).hide();
+
+      form.append(editShopRow);
+      //click event handler for Edit Shop button - hides button, displays edit shop name input row, includes on-click for cancel add and final add
+      form.find("button[id*='edit-shop]").on("click", (e) => {
+        e.preventDefault();
+        editShopRow.show();
+      });
+
+      $("#edit-shop-cancel").on("click", function (e) {
+        e.preventDefault();
+        $("#edit-shop-name").val("");
+        editShopRow.hide();
+      });
+
+      $("#final-edit-shop-btn").on("click", function (e) {
+        e.preventDefault();
+
+        let shopDiv = $(e.target);
+        while (!shopDiv.hasClass("shop-div")) {
+          shopDiv = shopDiv.parent();
+        }
+        let shopIdx = Number.parseInt(shopDiv.attr("idx"));
+        let shopId = shopDiv
+          .find("button[id*='edit-shop']")
+          .attr("id")
+          .split("-")[2];
+        let newname = $("#edit-shop-name").val();
+        if (!!newname) {
+          DOMManager.editShop(shopId, shopIdx, newname);
+        }
+      });
+
+      //END THIS CODE NOT WORKING
 
       //loop for item div display, including edit & delete buttons; itemIdx = indices of items, added to div class
 
@@ -271,8 +327,10 @@ class DOMManager {
         form.append(itemDiv);
       } //end of item display FOR loop
 
-      //adding items
+      // END WORKING CODE
 
+      //adding items
+      /*
       //editing items - onclick for button - getting indexes of shop and item to be edited
       form.find("button[id*='edit-item]").on("click", (e) => {
         e.preventDefault();
@@ -340,6 +398,7 @@ class DOMManager {
           itemDiv.show();
         });
       });
+      */
     } // end of shop display FOR loop
 
     //--------------------------------------------------------------
@@ -350,8 +409,6 @@ class DOMManager {
       DOMManager.deleteShop(id);
       e.preventDefault();
     });
-
-    //edit item button onclick
   } // end of static render
 } //end of DOM Manager
 
